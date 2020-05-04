@@ -12,6 +12,22 @@ app.get('/', function(req, res){
     res.render('home');
 });
 
+app.get('/account', function(req, res){
+    res.render('account');
+});
+
+app.get('/reserve', function(req, res){
+    res.render('reserve');
+});
+
+app.get('/cancel', function(req, res){
+    res.render('cancel');
+});
+
+app.get('/management', function(req, res){
+    res.render('management');
+});
+
 /* The handler for undefined routes */
 app.get('*', function(req, res){
    res.render('error'); 
