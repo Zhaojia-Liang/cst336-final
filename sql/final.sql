@@ -39,9 +39,30 @@ CREATE TABLE `flight` (
 --
 
 INSERT INTO `flight` (`flightId`, `flightnumber`, `from`, `to`, `departure`, `arrival`) VALUES
-(1, '319DC', 'San Francisco', 'San Jose', '2020-05-03', '2020-05-04'),
-(2, '246FL', 'Marina', 'San Francisco', '2020-05-03', '2020-05-04'),
-(3, '441JK', 'Shanghai', 'Los Angeles', '2020-05-04', '2020-05-06');
+(1, '319DC', 'Seattle', 'San Jose', '2020-05-03', '2020-05-04'),
+(2, '246FL', 'Monterey', 'San Francisco', '2020-05-03', '2020-05-04'),
+(3, '441JK', 'Shanghai', 'Los Angeles', '2020-05-04', '2020-05-06'),
+(4, '888CK', 'Tokyo', 'Los Angeles', '2020-05-05', '2020-05-06'),
+(5, '520FU', 'Shanghai', 'Tokyo', '2020-05-03', '2020-05-03'),
+(6, '741CA', 'Las Vegas', 'New York', '2020-05-05', '2020-05-06'),
+(7, '223TK', 'Chicago', 'New York', '2020-05-04', '2020-05-05'),
+(8, '777UA', 'Houston', 'Phoenix', '2020-05-07', '2020-05-08'),
+(9, '543UH', 'San Diego', 'Columbus', '2020-05-04', '2020-05-05'),
+(10, '588IU', 'Denver', 'Los Angeles', '2020-05-08', '2020-05-09'),
+(11, '431NM', 'Shanghai', 'Washington, D.C.', '2020-05-04', '2020-05-06'),
+(12, '994QS', 'Miami', 'Los Angeles', '2020-05-04', '2020-05-05'),
+(13, '411LS', 'Shanghai', 'Miami', '2020-05-04', '2020-05-06'),
+(14, '511QS', 'Houston', 'Los Angeles', '2020-05-04', '2020-05-04'),
+(15, '978AQ', 'San Jose', 'Los Angeles', '2020-05-04', '2020-05-04'),
+(16, '789CA', 'Beijing', 'San Jose', '2020-05-04', '2020-05-06'),
+(17, '432SK', 'New Orleans', 'Los Angeles', '2020-05-04', '2020-05-04'),
+(18, '561JK', 'Orlando', 'Los Angeles', '2020-05-04', '2020-05-04'),
+(19, '598IK', 'Boston', 'Los Angeles', '2020-05-04', '2020-05-05'),
+(20, '322HJ', 'Detroit', 'Los Angeles', '2020-05-04', '2020-05-04'),
+(21, '666KK', 'Philadelphia', 'Los Angeles', '2020-05-04', '2020-05-04'),
+(22, '777QA', 'Dallas', 'Los Angeles', '2020-05-06', '2020-05-06'),
+(23, '732QA', 'Dallas', 'New York', '2020-05-06', '2020-05-06'),
+(24, '727QA', 'Dallas', 'Miami', '2020-05-06', '2020-05-06');
 
 -- --------------------------------------------------------
 
