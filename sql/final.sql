@@ -18,8 +18,7 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`userId`, `username`, `password`) VALUES
-(1, 'admin', '$2b$10$sffemRCjSUw98dp/Vw/78uLk7fHopuUEzqnZNWDiB6TtcUSeSS6Ne');
+
 
 --
 -- Table structure for table `flight`
@@ -28,8 +27,8 @@ DROP TABLE IF EXISTS `flight`;
 CREATE TABLE `flight` (
   `flightId` mediumint(9) NOT NULL,
   `flightnumber` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
-  `from` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
-  `to` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+  `start` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+  `end` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   `departure` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   `arrival` varchar(25) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -38,7 +37,7 @@ CREATE TABLE `flight` (
 -- Dumping data for table `flight`
 --
 
-INSERT INTO `flight` (`flightId`, `flightnumber`, `from`, `to`, `departure`, `arrival`) VALUES
+INSERT INTO `flight` (`flightId`, `flightnumber`, `start`, `end`, `departure`, `arrival`) VALUES
 (1, '319DC', 'Seattle', 'San Jose', '2020-05-03', '2020-05-04'),
 (2, '246FL', 'Monterey', 'San Francisco', '2020-05-03', '2020-05-04'),
 (3, '441JK', 'Shanghai', 'Los Angeles', '2020-05-04', '2020-05-06'),

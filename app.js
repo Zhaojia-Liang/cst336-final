@@ -56,6 +56,30 @@ app.get('/', function(req, res){
     res.render('home');
 });
 
+var id = null;
+
+app.get('/HOME', isAuthenticated, function(req, res) {
+    var stmt = 'SELECT * FROM users;';
+    // console.log(stmt);
+    connection.query(stmt, function(error, results){
+        if(error) throw error;
+        // console.log(results);
+        results.forEach(function(user){
+            // console.log(user.username + " ");
+            if(user.username == req.session.user) id = user.userId;
+        });
+        console.log(id);
+        res.render('HOME', {user: req.session.user});
+    });
+});
+
+/* Logout Route */
+app.get('/logout', function(req, res){
+   req.session.destroy();
+   id = null;
+   res.redirect('/');
+});
+
 /* Create Account Routes */
 app.get('/account', function(req, res){
     res.render('account');
@@ -73,7 +97,7 @@ app.post('/login', async function(req, res){
     if(passwordMatch){
         req.session.authenticated = true;
         req.session.user = isUserExist[0].username;
-        res.redirect('/');
+        res.redirect('/HOME');
     }
     else{
         res.render('login', {error: true});
@@ -99,7 +123,33 @@ app.post('/register', function(req, res){
 });
 
 app.get('/reserve', function(req, res){
-    res.render('reserve');
+    var stmt = 'SELECT flightnumber FROM users where userId = ' + id + ' ;';
+    // console.log(stmt);
+    connection.query(stmt, function(error, results){
+        if(error) throw error;
+        var flightinfo = results[0];
+        res.render('reserve', {flight : flightinfo});
+    });
+    // res.render('reserve');
+});
+
+app.get('/flight', function(req, res) {
+    var start = req.query.start;
+    var end = req.query.end;
+    console.log(start + " " + end);
+    var stmt = 'SELECT * from flight where start=\''+ start + '\' and end=\'' + end + '\' ;';
+    console.log(stmt);
+    connection.query(stmt, function(error, found){
+      if(error) throw error;
+      if(found.length){
+          console.log(found);
+          var flight = found[0];
+          res.render('flight', {flight: flight});
+      }else{
+          res.render('Noflight');
+      }
+    });
+    // res.render('flight');
 });
 
 app.get('/cancel', function(req, res){
