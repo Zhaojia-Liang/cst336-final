@@ -2,16 +2,11 @@
 
 <div class='container'>
 	<div class='jumbotron'>
-		<h3>Search Result</h3>
+		<h3>Your Flight Information</h3>
 		<br>
 		<a class='btn btn-info' href='/reserve'>Back</a>
 		<br>
-		<%if(flight.flightnumber == undefined){%>
-        <h3 style='color: red;'> There is no such flight, please try again! </h3>
-		<%}else{%>
-			<br>
-			<h4>Flight Information</h4>
-			<br>
+		<br>
 			<div class='form-group row'>
 				<div class='col-sm-2'>
 					<h5>FlightNumber</h5>
@@ -47,8 +42,6 @@
 					<h5><%=flight.arrival%></h5>
 				</div>
 			</div>
-			<a class='btn btn-primary' href='/book/<%=flight.flightnumber%>/edit'>Book</a>
-		<%}%>
 	</div>
 </div>
 

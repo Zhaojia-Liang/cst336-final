@@ -30,20 +30,9 @@
 	
 	<hr>
 	<%if(flight.flightnumber.length){%>
-		<h3> Your Current Booking </h3>
-		<div class='form-group row'>
-			<div class='col-sm-4'>Flight Number</div>
-			<div class='col-sm-4'>De
-				<div class='form-check form-check-inline'>
-                    <input class='form-check-input' type='radio' name='sex' id='male' value='M'>
-                    <label class='form-check-label' for='male'>Male</label>
-                </div>
-                <div class='form-check form-check-inline'>
-                    <input class='form-check-input' type='radio' name='sex' id='female' value='F'>
-                    <label class='form-check-label' for='female'>Female</label>
-                </div>
-			</div>
-		</div>
+		<h3> Your Currently have a booking </h3>
+		<br>
+		<a class='btn btn-primary' href='/status/<%=flight.flightnumber%>'>Click to Check</a>
 	<%}else{%>
 		<h3> You have no flights</h3>
 	<%}%>

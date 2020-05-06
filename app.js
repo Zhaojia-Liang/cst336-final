@@ -42,6 +42,16 @@ function checkUsername(username){
     });
 }
 
+function checkManagername(username){
+    let stmt = 'SELECT * FROM users WHERE name=?';
+    return new Promise(function(resolve, reject){
+       connection.query(stmt, [username], function(error, results){
+           if(error) throw error;
+           resolve(results);
+       }); 
+    });
+}
+
 function checkPassword(password, hash){
     return new Promise(function(resolve, reject){
        bcrypt.compare(password, hash, function(error, result){
@@ -66,7 +76,10 @@ app.get('/HOME', isAuthenticated, function(req, res) {
         // console.log(results);
         results.forEach(function(user){
             // console.log(user.username + " ");
-            if(user.username == req.session.user) id = user.userId;
+            if(user.username == req.session.user){
+                id = user.userId;
+                fn = user.flightnumber;
+            }
         });
         console.log(id);
         res.render('HOME', {user: req.session.user});
@@ -122,8 +135,10 @@ app.post('/register', function(req, res){
     });
 });
 
+var fn = null;
+
 app.get('/reserve', isAuthenticated, function(req, res){
-    var stmt = 'SELECT flightnumber FROM users where userId = ' + id + ' ;';
+    var stmt = 'SELECT * FROM users where userId = ' + id + ' ;';
     // console.log(stmt);
     connection.query(stmt, function(error, results){
         if(error) throw error;
@@ -134,16 +149,27 @@ app.get('/reserve', isAuthenticated, function(req, res){
     // res.render('reserve');
 });
 
+app.get('/status/:flightnumber', function(req, res, next) {
+    var stmt = 'SELECT * FROM flight WHERE flightnumber="' + req.params.flightnumber + '";';
+    console.log(stmt);
+    connection.query(stmt, function(error, results) {
+        if(error) throw error;
+        var info = results[0];
+        console.log(results[0]);
+        res.render('status', {flight : info});
+    });
+});
+
 app.get('/book', function(req, res) {
     var start = req.query.start;
     var end = req.query.end;
     console.log(start + " " + end);
     var stmt = 'SELECT * from flight where start=\''+ start + '\' and end=\'' + end + '\' ;';
-    console.log(stmt);
+    // console.log(stmt);
     connection.query(stmt, function(error, found){
       if(error) throw error;
       if(found.length){
-          console.log(found);
+        //   console.log(found);
           var flight = found[0];
           res.render('book', {flight: flight});
       }else{
@@ -153,14 +179,67 @@ app.get('/book', function(req, res) {
     // res.render('flight');
 });
 
-app.get('/book/:flightnumber/edit', function(req, res, next) {
-    'INSERT INTO l9_author ' +
-                      '(authorId, firstName, lastName, dob, dod, sex, profession, country, portrait, biography) '+
-                      'VALUES '
+app.get('/book/:fid/edit', function(req, res) {
+    var stmt = 'SELECT * FROM users WHERE userId=' + id + ';';
+    console.log(stmt);
+    var flightid = req.params.fid;
+    console.log(flightid);
+    connection.query(stmt, function(error, results){
+      if(error) throw error;
+      console.log(results);
+      if(results[0].flightnumber.length){
+          res.render('twice');
+      }else if(results.length){
+          res.render('book_edit', {flight: flightid});
+      }
+    });
+});
+
+app.put('/book/:fid', function(req, res){
+    var stmt1 = 'UPDATE users SET ' +
+                'flightnumber = "'+ req.params.fid + '"' +
+                'WHERE userId = ' + id + ";";
+    console.log(stmt1);
+    connection.query(stmt1, function(error, results) {
+        if(error) throw error;
+        res.redirect('/reserve');
+    });
+});
+
+app.get('/twice', function(req, res, next) {
+    res.render('twice');
 });
 
 app.get('/cancel', function(req, res){
-    res.render('cancel');
+    if(fn.length){
+        var stmt = 'SELECT * FROM flight WHERE flightnumber="' + fn + '";';
+        connection.query(stmt, function(error, results) {
+            if(error) throw error;
+            var info = results[0];
+            res.render('cancel', {flight: info});
+        });
+    }else{
+        console.log(fn);
+        res.render('nothing');
+    }
+    // res.render('cancel');
+});
+
+app.get('/cancel/:fnb', function(req, res) {
+    var flightnumber = req.params.fnb;
+    res.render('cancel_confirm', {fnb : flightnumber});
+});
+
+app.put('/cancel/confirm/:fnb', function(req, res){
+    var stmt1 = 'UPDATE users SET ' +
+                'flightnumber = ""' +
+                'WHERE userId = ' + id + ";";
+    fn = null;
+    console.log(stmt1);
+    connection.query(stmt1, function(error, results) {
+        if(error) throw error;
+        res.redirect('/cancel');
+    });
 });
 
 app.get('/management', function(req, res){
@@ -170,8 +249,20 @@ app.get('/management', function(req, res){
     connection.query(stmt, function(error, results){
         if(error) throw error;
         if(results.length) flight = results;
-        res.render('management', {flight: flight, user: req.session.user})
+        res.render('management', {flight: flight, user: req.session.user});
     });
+});
+
+app.post('/managerLogin', async function(req, res) {
+    let isManagerExist   = await checkManagername(req.body.username);
+    let password  = isManagerExist.length > 0 ? isManagerExist[0].password : '';
+    if ((req.body.username == "zhaojia" && password == "zhaojia") ||
+         req.body.username == "zhangben" && password == "zhangben") {
+        res.redirect('/management');
+    }
+    else{
+        res.render('managerLogin', {error: true});
+    }
 });
 
 /* Show a flight record */

@@ -1,0 +1,49 @@
+<%- include ('templates/header'); -%>
+
+<div class='container'>
+	<div class='jumbotron'>
+		<h1>Below is your flight information</h1>
+		<br>
+			<div class='form-group row'>
+				<div class='col-sm-2'>
+					<h5>FlightNumber</h5>
+				</div>
+				<div class='col-sm-2'>
+					<h5>From</h5>
+				</div>
+				<div class='col-sm-2'>
+					<h5>To</h5>
+				</div>
+				<div class='col-sm-2'>
+					<h5>Depart</h5>
+				</div>
+				<div class='col-sm-2'>
+					<h5>Return</h5>
+				</div>
+			</div>
+			<hr>
+			<div class='form-group row'>
+				<div class='col-sm-2'>
+					<h5><%=flight.flightnumber%></h5>
+				</div>
+				<div class='col-sm-2'>
+					<h5><%=flight.start%></h5>
+				</div>
+				<div class='col-sm-2'>
+					<h5><%=flight.end%></h5>
+				</div>
+				<div class='col-sm-2'>
+					<h5><%=flight.departure%></h5>
+				</div>
+				<div class='col-sm-2'>
+					<h5><%=flight.arrival%></h5>
+				</div>
+			</div>
+		    <br>
+		    <div class='form-group row'>
+		    <a class='btn btn-info' class='col-sm-6' href='/HOME'>BACK</a>
+		    <a class='btn btn-danger' class='col-sm-6' href='/cancel/<%=flight.flightnumber%>''>DELETE</a>
+	</div>
+</div>
+
+<%- include ('templates/footer'); -%>
