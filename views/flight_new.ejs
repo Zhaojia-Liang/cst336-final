@@ -1,0 +1,49 @@
+<%- include ('templates/header'); -%>
+
+<div class='container'>
+	<div class='jumbotron'>
+		<h3> Welcome to the OtterAirway </h3>
+		<a class='btn btn-primary' href='/management'>Return</a>
+		</div>
+	<h3>Add New Flight</h3>
+	<form action='/flight/new' method='POST'>
+		<div class='form-group row'>
+			<label for='flightnumber' class='col-sm-4 col-form-label'>FlightNo.</label>
+			<div class='col-sm-4'>
+				<input type='text' class='form-control' id='flightnumber' name='flightnumber' placeholder='FlightNo' required>
+			</div>
+		</div>
+		<div class='form-group row'>
+			<label for='from' class='col-sm-4 col-form-label'>Depature</label>
+			<div class='col-sm-4'>
+				<input type='text' class='form-control' id='from' name='from' placeholder='Depature' required>
+			</div>
+		</div>
+		<div class='form-group row'>
+			<label for='to' class='col-sm-4 col-form-label'>Destination</label>
+			<div class='col-sm-4'>
+				<input type='text' class='form-control' id='to' name='to' placeholder='Destination' required>
+			</div>
+		</div>
+		<div class='form-group row'>
+			<label for='departrueDate' class='col-sm-4 col-form-label'>Date of Depature</label>
+			<div class='col-sm-4'>
+				<input type='text' class='form-control' id='departrueDate' name='departrueDate' placeholder='YYYY-MM-DD'>
+			</div>
+		</div>
+		<div class='form-group row'>
+			<label for='arrivalDate' class='col-sm-4 col-form-label'>Date of Arrive</label>
+			<div class='col-sm-4'>
+				<input type='text' class='form-control' id='arrivalDate' name='arrivalDate' placeholder='YYYY-MM-DD'>
+			</div>
+		</div>
+		<div class='form-group row'>
+			<div class='col-sm-4'></div>
+			<div class='col-sm-4'>
+				<button class='btn btn-primary btn-block'>Add Flight</button>
+			</div>
+			<div class='col-sm-4'></div>
+		</div>
+	</form>
+</div>
+<%- include ('templates/footer'); -%>

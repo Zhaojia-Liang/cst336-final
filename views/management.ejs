@@ -1,0 +1,28 @@
+<%- include ('templates/header'); -%>
+
+<div class='container'>
+	<div class='jumbotron'>
+		<h4> All Flights </h4><br>
+		<a class='btn btn-primary' href='/flight/new'>New Flights</a>
+		<a class='btn btn-danger' href='/logout'>Logout</a>
+		<br></br>
+		<h4>Welcome to OtterAirway</h4>
+	</div>
+<div class='row'>
+        <%if(!flight){%>
+            <h1 class='col-sm-12 nofound'>Empty database. Please add the first flight!</h1>    
+        <%}
+        else{%>
+        	<table text-align='center'>
+        		<tr><th>No.</th><th>Action</th></tr>
+        		<tr><td colspan="3"><hr/></td></tr>
+        		<%flight.forEach(function(flight){%>
+            		<tr>
+            			<td><%=flight.flightnumber%></td>
+            			<td><a href='/flightInfo/<%=flight.flightId%>'>Info</a> | <a href='/flightInfo/<%=flight.flightId%>/confirmdelete'>Delete</a></td>
+        		<%});%>
+        	</table>
+        <%}%>
+</div>
+</div>
+<%- include ('templates/footer'); -%>

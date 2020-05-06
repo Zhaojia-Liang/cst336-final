@@ -122,18 +122,19 @@ app.post('/register', function(req, res){
     });
 });
 
-app.get('/reserve', function(req, res){
+app.get('/reserve', isAuthenticated, function(req, res){
     var stmt = 'SELECT flightnumber FROM users where userId = ' + id + ' ;';
     // console.log(stmt);
     connection.query(stmt, function(error, results){
         if(error) throw error;
         var flightinfo = results[0];
+        console.log(flightinfo);
         res.render('reserve', {flight : flightinfo});
     });
     // res.render('reserve');
 });
 
-app.get('/flight', function(req, res) {
+app.get('/book', function(req, res) {
     var start = req.query.start;
     var end = req.query.end;
     console.log(start + " " + end);
@@ -144,12 +145,18 @@ app.get('/flight', function(req, res) {
       if(found.length){
           console.log(found);
           var flight = found[0];
-          res.render('flight', {flight: flight});
+          res.render('book', {flight: flight});
       }else{
-          res.render('Noflight');
+          res.render('noresult');
       }
     });
     // res.render('flight');
+});
+
+app.get('/book/:flightnumber/edit', function(req, res, next) {
+    'INSERT INTO l9_author ' +
+                      '(authorId, firstName, lastName, dob, dod, sex, profession, country, portrait, biography) '+
+                      'VALUES '
 });
 
 app.get('/cancel', function(req, res){
@@ -157,8 +164,103 @@ app.get('/cancel', function(req, res){
 });
 
 app.get('/management', function(req, res){
-    res.render('management');
+    var stmt = 'SELECT * FROM flight;';
+    console.log(stmt);
+    var flight = null;
+    connection.query(stmt, function(error, results){
+        if(error) throw error;
+        if(results.length) flight = results;
+        res.render('management', {flight: flight, user: req.session.user})
+    });
 });
+
+/* Show a flight record */
+app.get('/flightInfo/:fid', function(req, res){
+    var stmt = 'SELECT * FROM flight WHERE flightId=' + req.params.fid + ';';
+    console.log(stmt);
+    connection.query(stmt, function(error, results){
+       if(error) throw error;
+       if(results.length){
+           var flight = results[0];
+        //   flight.departure = flight.departure.toString().split(' ').slice(0,4).join(' ');
+        //   flight.arrvial = flight.arrvial.toString().split(' ').slice(0,4).join(' ');
+           res.render('flightInfo', {flight: flight});
+       }
+    });
+});
+
+/* Create a new flight - Get flight information */
+app.get('/flight/new', function(req, res){
+    res.render('flight_new');
+});
+
+/* Create a new flight - Add flight into DBMS */
+app.post('/flight/new', function(req, res){
+   //console.log(req.body);
+   connection.query('SELECT * FROM flight;', function(error, result){
+       if(error) throw error;
+       if(result.length){
+            var flightId = result[result.length - 1].flightId + 1;
+            var stmt = 'INSERT INTO flight ' +
+                      '(`flightId`, `flightnumber`, `from`, `to`, `departure`, `arrival`) ' + 'VALUES' +
+                      '(' + 
+                       flightId + ',"' +
+                       req.body.flightnumber + '","' +
+                       req.body.from + '","' +
+                       req.body.to + '","' +
+                       req.body.departure + '","' +
+                       req.body.arrival + '"' + ');';
+            console.log(stmt);
+            connection.query(stmt, function(error, result){
+                if(error) throw error;
+                res.redirect('/management');
+            });
+        }
+   });
+});
+
+app.get('/flightInfo/:fid/confirmdelete', function(req, res){
+    var stmt = 'SELECT * FROM flight WHERE flightId=' + req.params.fid + ';';
+    connection.query(stmt, function(error, results){
+       if(error) throw error;
+       if(results.length){
+           var flight = results[0];
+           res.render('flight_delete', {flight: flight});
+       }
+    });
+});
+
+/* Delete an flight record */
+app.get('/flightInfo/:fid/delete', function(req, res){
+    var stmt = 'DELETE from flight WHERE flightId='+ req.params.fid + ';';
+    connection.query(stmt, function(error, result){
+        if(error) throw error;
+        res.redirect('/management');
+    });
+});
+
+/* Weather search */
+app.get('/weather', function(req, res) {
+    res.render('weather');
+});
+
+app.get('/managerLogin', function(req, res){
+    res.render('managerLogin');
+});
+
+// app.post('/managerLogin', async function(req, res) {
+//     let isManagerExist   = await checkManagername(req.body.username);
+//     let hashedPasswd  = isManagerExist.length > 0 ? isManagerExist[0].password : '';
+//     let passwordMatch = await checkPassword(req.body.password, hashedPasswd);
+//     if(passwordMatch){
+//         req.session.authenticated = true;
+//         req.session.manager = isManagerExist[0].username;
+//         res.redirect('/management');
+//     }
+//     else{
+//         res.render('managerLogin', {error: true});
+//     }
+// });
 
 /* The handler for undefined routes */
 app.get('*', function(req, res){

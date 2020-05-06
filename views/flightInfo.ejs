@@ -1,0 +1,27 @@
+<%- include ('templates/header'); -%>
+
+<div class='container'>
+    <div class='jumbotron'>
+        <h3> Flight Information </h3>
+        <a class='btn btn-primary' href='/management'>Return</a>
+        </div>
+    <div class='row'>
+        <%if(!flight){%>
+            <h1 class='col-sm-12 nofound'>CANNOT FIND ANY FLIGHTS!!!</h1>    
+        <%}
+        else{%>
+            <div class='col-sm-4 info'>
+              <h3>FlightNo. <%=flight.flightnumber%></h3>
+              <div>From: <%=flight.from%></div>
+              <div>To: <%=flight.to%></div>
+              <div>Date of Depature: <%=flight.departure%></div>
+              <div>Date of arrival: <%=flight.arrival%></div>
+            </div>
+        <%}%>
+    </div>
+</div>
+<div class='col-sm-4'>
+<a class='btn btn-primary' href='/weather'>Search Weather</a>
+</div>
+
+<%- include ('templates/footer'); -%>
