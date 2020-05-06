@@ -12,16 +12,13 @@
         else{%>
             <div class='col-sm-4 info'>
               <h3>FlightNo. <%=flight.flightnumber%></h3>
-              <div>From: <%=flight.from%></div>
-              <div>To: <%=flight.to%></div>
+              <div>From: <%=flight.start%></div>
+              <div>To: <%=flight.end%></div>
               <div>Date of Depature: <%=flight.departure%></div>
               <div>Date of arrival: <%=flight.arrival%></div>
             </div>
         <%}%>
     </div>
-</div>
-<div class='col-sm-4'>
-<a class='btn btn-primary' href='/weather'>Search Weather</a>
 </div>
 
 <%- include ('templates/footer'); -%>

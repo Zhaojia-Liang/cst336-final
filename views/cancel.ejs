@@ -5,6 +5,7 @@
 		<h1>Below is your flight information</h1>
 		<br>
 			<div class='form-group row'>
+				<div class='col-sm-1'></div>
 				<div class='col-sm-2'>
 					<h5>FlightNumber</h5>
 				</div>
@@ -20,9 +21,11 @@
 				<div class='col-sm-2'>
 					<h5>Return</h5>
 				</div>
+				<div class='col-sm-1'></div>
 			</div>
 			<hr>
 			<div class='form-group row'>
+				<div class='col-sm-1'></div>
 				<div class='col-sm-2'>
 					<h5><%=flight.flightnumber%></h5>
 				</div>
@@ -38,11 +41,19 @@
 				<div class='col-sm-2'>
 					<h5><%=flight.arrival%></h5>
 				</div>
+				<div class='col-sm-1'></div>
 			</div>
 		    <br>
 		    <div class='form-group row'>
-		    <a class='btn btn-info' class='col-sm-6' href='/HOME'>BACK</a>
-		    <a class='btn btn-danger' class='col-sm-6' href='/cancel/<%=flight.flightnumber%>''>DELETE</a>
+		    	<div class='col-sm-2'></div>
+		    	<div class='col-sm-4'>
+					<a class='btn btn-info' href='/HOME'>BACK</a>
+				</div>
+				<div class='col-sm-4'>
+					<a class='btn btn-danger' href='/cancel/<%=flight.flightnumber%>''>DELETE</a>
+				</div>
+				<div class='col-sm-2'></div>
+		    </div>
 	</div>
 </div>
 

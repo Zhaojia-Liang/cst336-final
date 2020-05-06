@@ -61,13 +61,16 @@ function checkPassword(password, hash){
     });
 }
 
+var id = null;
+
+var fn = "";
+
 /* Home Route */
 app.get('/', function(req, res){
     res.render('home');
 });
 
-var id = null;
-
+/* User Page Route */
 app.get('/HOME', isAuthenticated, function(req, res) {
     var stmt = 'SELECT * FROM users;';
     // console.log(stmt);
@@ -86,23 +89,36 @@ app.get('/HOME', isAuthenticated, function(req, res) {
     });
 });
 
-/* Logout Route */
-app.get('/logout', function(req, res){
-   req.session.destroy();
-   id = null;
-   res.redirect('/');
-});
-
-/* Create Account Routes */
+/* Create Account Route */
 app.get('/account', function(req, res){
     res.render('account');
 });
 
-/* Login Routes */
+/* Register Route */
+app.get('/register', function(req, res){
+    res.render('register');
+});
+
+/* Register Route - Fetching data into the database */
+app.post('/register', function(req, res){
+    let salt = 10;
+    bcrypt.hash(req.body.password, salt, function(error, hash){
+        if(error) throw error;
+        let stmt = 'INSERT INTO users (username, password) VALUES (?, ?)';
+        let data = [req.body.username, hash];
+        connection.query(stmt, data, function(error, result){
+           if(error) throw error;
+           res.redirect('/login');
+        });
+    });
+});
+
+/* Login Route */
 app.get('/login', function(req, res){
     res.render('login');
 });
 
+/* Check Login Route */
 app.post('/login', async function(req, res){
     let isUserExist   = await checkUsername(req.body.username);
     let hashedPasswd  = isUserExist.length > 0 ? isUserExist[0].password : '';
@@ -117,26 +133,14 @@ app.post('/login', async function(req, res){
     }
 });
 
-/* Register Routes */
-app.get('/register', function(req, res){
-    res.render('register');
+/* Logout Route */
+app.get('/logout', isAuthenticated, function(req, res){
+   req.session.destroy();
+   id = null;
+   res.redirect('/');
 });
 
-app.post('/register', function(req, res){
-    let salt = 10;
-    bcrypt.hash(req.body.password, salt, function(error, hash){
-        if(error) throw error;
-        let stmt = 'INSERT INTO users (username, password) VALUES (?, ?)';
-        let data = [req.body.username, hash];
-        connection.query(stmt, data, function(error, result){
-           if(error) throw error;
-           res.redirect('/login');
-        });
-    });
-});
-
-var fn = null;
-
+/* Reserve Route */
 app.get('/reserve', isAuthenticated, function(req, res){
     var stmt = 'SELECT * FROM users where userId = ' + id + ' ;';
     // console.log(stmt);
@@ -149,18 +153,8 @@ app.get('/reserve', isAuthenticated, function(req, res){
     // res.render('reserve');
 });
 
-app.get('/status/:flightnumber', function(req, res, next) {
-    var stmt = 'SELECT * FROM flight WHERE flightnumber="' + req.params.flightnumber + '";';
-    console.log(stmt);
-    connection.query(stmt, function(error, results) {
-        if(error) throw error;
-        var info = results[0];
-        console.log(results[0]);
-        res.render('status', {flight : info});
-    });
-});
-
-app.get('/book', function(req, res) {
+/* Reserve Route - Searching for avaliable flight in database */
+app.get('/book', isAuthenticated, function(req, res) {
     var start = req.query.start;
     var end = req.query.end;
     console.log(start + " " + end);
@@ -179,7 +173,8 @@ app.get('/book', function(req, res) {
     // res.render('flight');
 });
 
-app.get('/book/:fid/edit', function(req, res) {
+/* Reserve Route - Booking the ticket */
+app.get('/book/:fid/edit', isAuthenticated, function(req, res) {
     var stmt = 'SELECT * FROM users WHERE userId=' + id + ';';
     console.log(stmt);
     var flightid = req.params.fid;
@@ -195,23 +190,44 @@ app.get('/book/:fid/edit', function(req, res) {
     });
 });
 
-app.put('/book/:fid', function(req, res){
+/* Reserve Route - Fetching data into the database */
+app.put('/book/:fid', isAuthenticated, function(req, res){
     var stmt1 = 'UPDATE users SET ' +
                 'flightnumber = "'+ req.params.fid + '"' +
                 'WHERE userId = ' + id + ";";
     console.log(stmt1);
+    fn = req.params.fid;
     connection.query(stmt1, function(error, results) {
         if(error) throw error;
         res.redirect('/reserve');
     });
 });
 
-app.get('/twice', function(req, res, next) {
+/* Reserve Route - Check the booking infomation */
+app.get('/status/:flightnumber', isAuthenticated, function(req, res, next) {
+    var stmt = 'SELECT * FROM flight WHERE flightnumber="' + req.params.flightnumber + '";';
+    console.log(stmt);
+    connection.query(stmt, function(error, results) {
+        if(error) throw error;
+        var info = results[0];
+        console.log(results[0]);
+        res.render('status', {flight : info});
+    });
+});
+
+/* Reserve Route - Cannot book the second ticket */
+app.get('/twice', isAuthenticated, function(req, res, next) {
     res.render('twice');
 });
 
-app.get('/cancel', function(req, res){
-    if(fn.length){
+/* Reserve Route - Ajax searching weather */
+app.get('/weather', isAuthenticated, function(req, res) {
+    res.render('weather');
+});
+
+/* Cancel Route */
+app.get('/cancel', isAuthenticated, function(req, res){
+    if(fn != null){
         var stmt = 'SELECT * FROM flight WHERE flightnumber="' + fn + '";';
         connection.query(stmt, function(error, results) {
             if(error) throw error;
@@ -225,12 +241,14 @@ app.get('/cancel', function(req, res){
     // res.render('cancel');
 });
 
-app.get('/cancel/:fnb', function(req, res) {
+/* Cancel Route - Have Booking status and want to cancel */
+app.get('/cancel/:fnb', isAuthenticated, function(req, res) {
     var flightnumber = req.params.fnb;
     res.render('cancel_confirm', {fnb : flightnumber});
 });
 
-app.put('/cancel/confirm/:fnb', function(req, res){
+/* Cancel Route - Edit user's data */
+app.put('/cancel/confirm/:fnb', isAuthenticated, function(req, res){
     var stmt1 = 'UPDATE users SET ' +
                 'flightnumber = ""' +
                 'WHERE userId = ' + id + ";";
@@ -242,17 +260,12 @@ app.put('/cancel/confirm/:fnb', function(req, res){
     });
 });
 
-app.get('/management', function(req, res){
-    var stmt = 'SELECT * FROM flight;';
-    console.log(stmt);
-    var flight = null;
-    connection.query(stmt, function(error, results){
-        if(error) throw error;
-        if(results.length) flight = results;
-        res.render('management', {flight: flight, user: req.session.user});
-    });
+/* Management Route - Admin Login */
+app.get('/managerLogin', function(req, res){
+    res.render('managerLogin');
 });
 
+/* Management Route - Check the admin account */
 app.post('/managerLogin', async function(req, res) {
     let isManagerExist   = await checkManagername(req.body.username);
     let password  = isManagerExist.length > 0 ? isManagerExist[0].password : '';
@@ -265,7 +278,19 @@ app.post('/managerLogin', async function(req, res) {
     }
 });
 
-/* Show a flight record */
+/* Management Route */
+app.get('/management', function(req, res){
+    var stmt = 'SELECT * FROM flight;';
+    console.log(stmt);
+    var flight = null;
+    connection.query(stmt, function(error, results){
+        if(error) throw error;
+        if(results.length) flight = results;
+        res.render('management', {flight: flight, user: req.session.user});
+    });
+});
+
+/* Management Route - Display a flight information detail */
 app.get('/flightInfo/:fid', function(req, res){
     var stmt = 'SELECT * FROM flight WHERE flightId=' + req.params.fid + ';';
     console.log(stmt);
@@ -280,12 +305,12 @@ app.get('/flightInfo/:fid', function(req, res){
     });
 });
 
-/* Create a new flight - Get flight information */
+/* Management Route - Create a new flight */
 app.get('/flight/new', function(req, res){
     res.render('flight_new');
 });
 
-/* Create a new flight - Add flight into DBMS */
+/* Management Route - Fetching data into the database */
 app.post('/flight/new', function(req, res){
    //console.log(req.body);
    connection.query('SELECT * FROM flight;', function(error, result){
@@ -293,14 +318,14 @@ app.post('/flight/new', function(req, res){
        if(result.length){
             var flightId = result[result.length - 1].flightId + 1;
             var stmt = 'INSERT INTO flight ' +
-                      '(`flightId`, `flightnumber`, `from`, `to`, `departure`, `arrival`) ' + 'VALUES' +
+                      '(`flightId`, `flightnumber`, `start`, `end`, `departure`, `arrival`) ' + 'VALUES' +
                       '(' + 
                        flightId + ',"' +
                        req.body.flightnumber + '","' +
                        req.body.from + '","' +
                        req.body.to + '","' +
-                       req.body.departure + '","' +
-                       req.body.arrival + '"' + ');';
+                       req.body.departureDate + '","' +
+                       req.body.arrivalDate + '"' + ');';
             console.log(stmt);
             connection.query(stmt, function(error, result){
                 if(error) throw error;
@@ -310,6 +335,7 @@ app.post('/flight/new', function(req, res){
    });
 });
 
+/* Management Route - Delete user's data in the database */
 app.get('/flightInfo/:fid/confirmdelete', function(req, res){
     var stmt = 'SELECT * FROM flight WHERE flightId=' + req.params.fid + ';';
     connection.query(stmt, function(error, results){
@@ -321,7 +347,7 @@ app.get('/flightInfo/:fid/confirmdelete', function(req, res){
     });
 });
 
-/* Delete an flight record */
+/* Management Route - Delete data */
 app.get('/flightInfo/:fid/delete', function(req, res){
     var stmt = 'DELETE from flight WHERE flightId='+ req.params.fid + ';';
     connection.query(stmt, function(error, result){
@@ -329,29 +355,6 @@ app.get('/flightInfo/:fid/delete', function(req, res){
         res.redirect('/management');
     });
 });
-
-/* Weather search */
-app.get('/weather', function(req, res) {
-    res.render('weather');
-});
-
-app.get('/managerLogin', function(req, res){
-    res.render('managerLogin');
-});
-
-// app.post('/managerLogin', async function(req, res) {
-//     let isManagerExist   = await checkManagername(req.body.username);
-//     let hashedPasswd  = isManagerExist.length > 0 ? isManagerExist[0].password : '';
-//     let passwordMatch = await checkPassword(req.body.password, hashedPasswd);
-//     if(passwordMatch){
-//         req.session.authenticated = true;
-//         req.session.manager = isManagerExist[0].username;
-//         res.redirect('/management');
-//     }
-//     else{
-//         res.render('managerLogin', {error: true});
-//     }
-// });
 
 /* The handler for undefined routes */
 app.get('*', function(req, res){

@@ -1,19 +1,21 @@
 <%- include ('templates/header'); -%>
 <div class="container">
            <div class="jumbotron">
-                <h1>Weather</h1>
-                <p>Please enter the name of the city you would like to search?</p>
+                <h1>Weather Searching</h1>
+                <br>
+                <br>
                 <div class="form-group row">
-  				    <div class="col-sm-4">
-					    <input type="text" class="form-control" id="q" placeholder="City Name" required>
+  				    <div class="col-sm-6">
+					    <h6>Name of the city you would like to search</h6>
 				    </div>
-				<div class="form-group row">
-				<div class="col-sm-4">
-					<button type="submit" class="btn btn-primary" id="submitButton">Search</button>
-				</div>
+				    <div class="col-sm-6">
+						<input type="text" class="form-control" id="q" placeholder="City Name" required>
+					</div>
 			    </div>
-            </div>
-        </div>
+			    <br>
+			    <a class='btn btn-primary' href='/reserve'>Back</a>
+			    <button type="submit" class="btn btn-primary" id="submitButton">Search</button>
+        	</div>
         <div id="results"></div>
 </div>
 <script>
