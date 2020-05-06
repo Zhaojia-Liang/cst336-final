@@ -43,7 +43,7 @@ function checkUsername(username){
 }
 
 function checkManagername(username){
-    let stmt = 'SELECT * FROM users WHERE name=?';
+    let stmt = 'SELECT * FROM manager WHERE name=?';
     return new Promise(function(resolve, reject){
        connection.query(stmt, [username], function(error, results){
            if(error) throw error;
@@ -268,9 +268,12 @@ app.get('/managerLogin', function(req, res){
 /* Management Route - Check the admin account */
 app.post('/managerLogin', async function(req, res) {
     let isManagerExist   = await checkManagername(req.body.username);
-    let password  = isManagerExist.length > 0 ? isManagerExist[0].password : '';
-    if ((req.body.username == "zhaojia" && password == "zhaojia") ||
-         req.body.username == "zhangben" && password == "zhangben") {
+    console.log(isManagerExist);
+    let Passwd  = isManagerExist.length > 0 ? isManagerExist[0].password : '';
+    var passwordMatch = Boolean(req.body.password == Passwd);
+    if(passwordMatch){
+        req.session.authenticated = true;
+        req.session.user = isManagerExist[0].username;
         res.redirect('/management');
     }
     else{
