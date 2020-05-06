@@ -104,8 +104,8 @@ app.post('/register', function(req, res){
     let salt = 10;
     bcrypt.hash(req.body.password, salt, function(error, hash){
         if(error) throw error;
-        let stmt = 'INSERT INTO users (username, password) VALUES (?, ?)';
-        let data = [req.body.username, hash];
+        let stmt = 'INSERT INTO users (username, password, flightnumber) VALUES (?, ?, ?)';
+        let data = [req.body.username, hash, ""];
         connection.query(stmt, data, function(error, result){
            if(error) throw error;
            res.redirect('/login');
@@ -163,7 +163,7 @@ app.get('/book', isAuthenticated, function(req, res) {
     connection.query(stmt, function(error, found){
       if(error) throw error;
       if(found.length){
-        //   console.log(found);
+          console.log(found);
           var flight = found[0];
           res.render('book', {flight: flight});
       }else{
@@ -227,7 +227,7 @@ app.get('/weather', isAuthenticated, function(req, res) {
 
 /* Cancel Route */
 app.get('/cancel', isAuthenticated, function(req, res){
-    if(fn != null){
+    if(fn != null && fn != ""){
         var stmt = 'SELECT * FROM flight WHERE flightnumber="' + fn + '";';
         connection.query(stmt, function(error, results) {
             if(error) throw error;
